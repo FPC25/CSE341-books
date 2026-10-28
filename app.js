@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.status(200).json({ message: "Hello, World!" });
+    return res.status(200).json({ message: "Hello, World!" });
 });
 
 export default app;
