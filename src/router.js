@@ -26,7 +26,7 @@ const router = express.Router();
  *                 properties:
  *                   id:
  *                     type: string
- *                   author:
+ *                   authorId:
  *                     type: string
  *                   title:
  *                     type: string
@@ -35,7 +35,7 @@ const router = express.Router();
  *                     format: date
  *                 required:
  *                   - id
- *                   - author
+ *                   - authorId
  *                   - title
  *                   - publicationDate
  *       500:
@@ -76,7 +76,7 @@ router.get("/books", getBooksHandler);
  *               properties:
  *                 id:
  *                   type: string
- *                 author:
+ *                 authorId:
  *                   type: string
  *                 title:
  *                   type: string
@@ -85,7 +85,7 @@ router.get("/books", getBooksHandler);
  *                   format: date
  *               required:
  *                 - id
- *                 - author
+ *                 - authorId
  *                 - title
  *                 - publicationDate
  *       404:
