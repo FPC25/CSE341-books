@@ -6,7 +6,8 @@ import {
 
 import {
     getAuthorsHandler,
-    getAuthorByIdHandler
+    getAuthorByIdHandler,
+    getBooksFromAuthorHandler
 } from "./controllers/authors.js";
 
 const router = express.Router();
@@ -192,5 +193,61 @@ router.get("/authors", getAuthorsHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors/:id", getAuthorByIdHandler);
+
+/**
+ * @swagger
+ * /authors/{id}/books:
+ *   get:
+ *     summary: Get all books by an author
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the author
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of books by the author
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   authorId:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   publicationDate:
+ *                     type: string
+ *                     format: date
+ *       404:
+ *         description: Author not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Author not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.get("/authors/:id/books", getBooksFromAuthorHandler);
 
 export default router;

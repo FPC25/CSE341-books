@@ -14,7 +14,15 @@ const getAuthorById = async (authorId) => {
     return author;
 }
 
+const getBooksFromAuthor = async (authorId) => {
+    const db = getDb();
+    const collection = db.collection("books");
+    const books = await collection.find({ "authorId": authorId }).toArray();
+    return books;
+}
+
 export { 
     getAllAuthors,
-    getAuthorById
+    getAuthorById,
+    getBooksFromAuthor
 };
