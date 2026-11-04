@@ -4,8 +4,14 @@ import {
     getBookByIdHandler
 } from "./controllers/books.js";
 
+import {
+    getAuthorsHandler,
+    getAuthorByIdHandler
+} from "./controllers/authors.js";
+
 const router = express.Router();
 
+// Books routes
 // Define routes for all books
 /**
  * @swagger
@@ -110,5 +116,81 @@ router.get("/books", getBooksHandler);
  *                   example: Internal Server Error
  */
 router.get("/books/:id", getBookByIdHandler);
+
+// Authors routes
+/**
+ * @swagger
+ * /authors:
+ *   get:
+ *     summary: Get all authors
+ *     tags:
+ *       - Authors
+ *     responses:
+ *       200:
+ *         description: List of authors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 additionalProperties: true
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.get("/authors", getAuthorsHandler);
+
+/**
+ * @swagger
+ * /authors/{id}:
+ *   get:
+ *     summary: Get an author by ID
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the author to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Author found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: true
+ *       404:
+ *         description: Author not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Author not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.get("/authors/:id", getAuthorByIdHandler);
 
 export default router;
