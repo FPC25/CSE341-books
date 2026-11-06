@@ -11,6 +11,17 @@ const connectToDb = async () => {
   const client = new MongoClient(connectionString);
   await client.connect();
   database = client.db(process.env.MONGODB_DB_NAME || 'practice');
+
+  await database.collection("authors").createIndex(
+    { id: 1 },
+    { unique: true }
+  );
+
+  await database.collection("books").createIndex(
+    { id: 1 },
+    { unique: true }
+  );
+
   return database;
 };
 
