@@ -8,6 +8,7 @@ import {
     getAuthorsHandler,
     getAuthorByIdHandler,
     getBooksFromAuthorHandler,
+    postAuthorHandler
 } from "./controllers/authors.js";
 
 import { body } from "express-validator";
@@ -56,7 +57,6 @@ const authorValidationRules = [
         }
     ),
 ];
-
 
 // Books routes
 // Define routes for all books
@@ -340,5 +340,103 @@ router.get("/authors/:id", getAuthorByIdHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors/:id/books", getBooksFromAuthorHandler);
+
+/**
+ * @swagger
+ * /authors:
+ *   post:
+ *     summary: Create an author
+ *     tags:
+ *       - Authors
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - name
+ *               - birthYear
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: author-1
+ *                 minLength: 1
+ *                 description: Trimmed, non-empty string; HTML characters are escaped before storage.
+ *               name:
+ *                 type: string
+ *                 example: Jane Austen
+ *                 minLength: 1
+ *                 description: Trimmed, non-empty string; HTML characters are escaped before storage.
+ *               birthYear:
+ *                 type: integer
+ *                 description: Must not be later than the current UTC year.
+ *                 example: 1775
+ *             additionalProperties: false
+ *     responses:
+ *       201:
+ *         description: Author inserted into MongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - acknowledged
+ *                 - insertedId
+ *               properties:
+ *                 acknowledged:
+ *                   type: boolean
+ *                   example: true
+ *                 insertedId:
+ *                   type: string
+ *                   description: MongoDB-generated document identifier
+ *                   example: 665f1a2b3c4d5e6f7a8b9c0d
+ *       400:
+ *         description: Invalid author data or malformed JSON
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               invalidAuthorData:
+ *                 summary: Missing or invalid fields, or additional fields
+ *                 value:
+ *                   message: Invalid author data.
+ *               malformedJson:
+ *                 summary: Malformed JSON request body
+ *                 value:
+ *                   message: Malformed JSON request body.
+ *       409:
+ *         description: An author with this ID already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: The request conflicts with existing data.
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.post("/authors", authorValidationRules, postAuthorHandler);
 
 export default router;

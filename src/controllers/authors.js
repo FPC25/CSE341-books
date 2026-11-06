@@ -76,5 +76,6 @@ const postAuthorHandler = async (req, res) => {
 export { 
     getAuthorsHandler,
     getAuthorByIdHandler,
-    getBooksFromAuthorHandler
+    getBooksFromAuthorHandler,
+    postAuthorHandler
 }
