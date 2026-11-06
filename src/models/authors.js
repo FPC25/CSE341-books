@@ -28,9 +28,25 @@ const postAuthor = async (authorData) => {
     return result;
 };
 
+const putAuthor = async (authorId, updateData) => {
+    const db = getDb()
+    const collection = db.collection("authors");
+
+    if (Object.keys(updateData).length === 0) {
+        return collection.findOne({ id: authorId });
+    }
+
+    return collection.findOneAndUpdate(
+        { id: authorId },
+        { $set: updateData },
+        { returnDocument: "after" }
+    );
+};
+
 export { 
     getAllAuthors,
     getAuthorById,
     getBooksFromAuthor,
-    postAuthor
+    postAuthor,
+    putAuthor
 };
