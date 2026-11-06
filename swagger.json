@@ -446,6 +446,184 @@
             }
           }
         }
+      },
+      "put": {
+        "summary": "Partially update an author",
+        "tags": [
+          "Authors"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Custom ID of the author to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Jane Austen",
+                    "minLength": 1,
+                    "description": "Optional; trimmed, non-empty string; HTML characters are escaped before storage."
+                  },
+                  "birthYear": {
+                    "type": "integer",
+                    "description": "Optional; must not be later than the current UTC year.",
+                    "example": 1775
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Author updated, or returned unchanged when the request body is empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "_id",
+                        "id",
+                        "name",
+                        "birthYear"
+                      ],
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "description": "MongoDB document identifier"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "birthYear": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "message",
+                        "author"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "No changes were made."
+                        },
+                        "author": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string"
+                            },
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "birthYear": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid author data or malformed JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidAuthorData": {
+                    "summary": "Invalid fields or additional fields",
+                    "value": {
+                      "message": "Invalid author data."
+                    }
+                  },
+                  "malformedJson": {
+                    "summary": "Malformed JSON request body",
+                    "value": {
+                      "message": "Malformed JSON request body."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Author not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Author not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server or database error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/authors/{id}/books": {
