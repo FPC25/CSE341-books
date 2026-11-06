@@ -10,7 +10,53 @@ import {
     getBooksFromAuthorHandler,
 } from "./controllers/authors.js";
 
+import { body } from "express-validator";
+
 const router = express.Router();
+
+const allowedAuthorFields = new Set(["id", "name", "birthYear"]);
+
+const authorValidationRules = [
+    body().custom((value) => {
+        return (
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).every((key) => { return allowedAuthorFields.has(key); })
+        );
+    }),
+
+    body("id")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape(), 
+        
+    body("name")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape(),
+
+    body("birthYear").custom(
+        (value) => {
+            return (
+                typeof value === "number" &&
+                Number.isInteger(value) &&
+                value <= new Date().getUTCFullYear()
+            );
+        }
+    ),
+];
+
 
 // Books routes
 // Define routes for all books
