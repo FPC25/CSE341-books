@@ -361,7 +361,7 @@ router.get("/authors/:id/books", getBooksFromAuthorHandler);
  *             properties:
  *               id:
  *                 type: string
- *                 example: author-1
+ *                 example: a1
  *                 minLength: 1
  *                 description: Trimmed, non-empty string; HTML characters are escaped before storage.
  *               name:
