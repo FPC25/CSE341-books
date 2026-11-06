@@ -7,7 +7,7 @@ import {
 import {
     getAuthorsHandler,
     getAuthorByIdHandler,
-    getBooksFromAuthorHandler
+    getBooksFromAuthorHandler,
 } from "./controllers/authors.js";
 
 const router = express.Router();
@@ -31,6 +31,9 @@ const router = express.Router();
  *               items:
  *                 type: object
  *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: MongoDB document identifier
  *                   id:
  *                     type: string
  *                   authorId:
@@ -45,6 +48,7 @@ const router = express.Router();
  *                   - authorId
  *                   - title
  *                   - publicationDate
+ *                   - _id
  *       500:
  *         description: Internal server error
  *         content:
@@ -81,6 +85,9 @@ router.get("/books", getBooksHandler);
  *             schema:
  *               type: object
  *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB document identifier
  *                 id:
  *                   type: string
  *                 authorId:
@@ -95,6 +102,7 @@ router.get("/books", getBooksHandler);
  *                 - authorId
  *                 - title
  *                 - publicationDate
+ *                 - _id
  *       404:
  *         description: Book not found
  *         content:
@@ -135,7 +143,21 @@ router.get("/books/:id", getBookByIdHandler);
  *               type: array
  *               items:
  *                 type: object
- *                 additionalProperties: true
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: MongoDB document identifier
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   birthYear:
+ *                     type: integer
+ *                 required:
+ *                   - _id
+ *                   - id
+ *                   - name
+ *                   - birthYear
  *       500:
  *         description: Internal server error
  *         content:
@@ -170,7 +192,21 @@ router.get("/authors", getAuthorsHandler);
  *           application/json:
  *             schema:
  *               type: object
- *               additionalProperties: true
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB document identifier
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 birthYear:
+ *                   type: integer
+ *               required:
+ *                 - _id
+ *                 - id
+ *                 - name
+ *                 - birthYear
  *       404:
  *         description: Author not found
  *         content:
@@ -218,6 +254,9 @@ router.get("/authors/:id", getAuthorByIdHandler);
  *               items:
  *                 type: object
  *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: MongoDB document identifier
  *                   id:
  *                     type: string
  *                   authorId:
@@ -227,6 +266,12 @@ router.get("/authors/:id", getAuthorByIdHandler);
  *                   publicationDate:
  *                     type: string
  *                     format: date
+ *                 required:
+ *                   - _id
+ *                   - id
+ *                   - authorId
+ *                   - title
+ *                   - publicationDate
  *       404:
  *         description: Author not found
  *         content:
