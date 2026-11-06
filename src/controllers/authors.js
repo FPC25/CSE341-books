@@ -103,15 +103,15 @@ const putAuthorHandler = async (req, res) => {
                 "message": "No changes were made.",
                 author
             });
-        } else { // Proceed with the update
-            const updatedAuthor = await putAuthor(requestedId, updateData);
-            // if the author is deleted before the update and after the search, the updatedAuthor will be null, so we need to check for that
-            if (!updatedAuthor) {
-                return res.status(404).json({ "message": "Author not found" });
-            }
-
-            return res.status(200).json(updatedAuthor);
+        } 
+        
+        // Proceed with the update
+        const updatedAuthor = await putAuthor(requestedId, updateData);
+        // if the author is deleted before the update and after the search, the updatedAuthor will be null, so we need to check for that
+        if (!updatedAuthor) {
+            return res.status(404).json({ "message": "Author not found" });
         }
+        return res.status(200).json(updatedAuthor);
     } catch (error) {
         console.error("PUT /authors/:id failed:", error.message);
         return res.status(500).json({ "message": "Internal Server Error" });
