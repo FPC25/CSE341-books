@@ -2,7 +2,8 @@ import {
     getAllAuthors,
     getAuthorById,
     getBooksFromAuthor,
-    postAuthor
+    postAuthor,
+    putAuthor
 } from "../models/authors.js";
 
 import {
@@ -73,9 +74,54 @@ const postAuthorHandler = async (req, res) => {
     }
 };
 
+const putAuthorHandler = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ "message": "Invalid author data." });
+    }
+
+    const requestedId = req.params.id;
+    try {
+        // Validates that the author exists before attempting to update
+        const author = await getAuthorById(requestedId);
+        if (!author) {
+            return res.status(404).json({ "message": "Author not found" });
+        }
+
+        // Prepare the update data based on the request body
+        const updateData = {};
+        if (req.body.name !== undefined) {
+            updateData.name = req.body.name;
+        }
+        if (req.body.birthYear !== undefined) {
+            updateData.birthYear = req.body.birthYear;
+        }
+
+        // If no update data is provided, return the existing author data
+        if (Object.keys(updateData).length === 0) {
+            return res.status(200).json({
+                "message": "No changes were made.",
+                author
+            });
+        } else { // Proceed with the update
+            const updatedAuthor = await putAuthor(requestedId, updateData);
+            // if the author is deleted before the update and after the search, the updatedAuthor will be null, so we need to check for that
+            if (!updatedAuthor) {
+                return res.status(404).json({ "message": "Author not found" });
+            }
+
+            return res.status(200).json(updatedAuthor);
+        }
+    } catch (error) {
+        console.error("PUT /authors/:id failed:", error.message);
+        return res.status(500).json({ "message": "Internal Server Error" });
+    }
+};
+
 export { 
     getAuthorsHandler,
     getAuthorByIdHandler,
     getBooksFromAuthorHandler,
-    postAuthorHandler
+    postAuthorHandler,
+    putAuthorHandler
 }
