@@ -58,6 +58,39 @@ const authorValidationRules = [
     ),
 ];
 
+const allowedAuthorUpdateFields = new Set(["name", "birthYear"]);
+
+const authorUpdateValidationRules = [
+    body().custom((value) => {
+        return (
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).every((key) => { return allowedAuthorUpdateFields.has(key); })
+        );
+    }),
+        
+    body("name")
+        .optional()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape(),
+
+    body("birthYear")
+        .optional()
+        .custom((value) => {
+            return (
+                typeof value === "number" &&
+                Number.isInteger(value) &&
+                value <= new Date().getUTCFullYear()
+            );
+        }
+    ),
+];
+
 // Books routes
 // Define routes for all books
 /**
