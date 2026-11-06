@@ -21,8 +21,16 @@ const getBooksFromAuthor = async (authorId) => {
     return books;
 }
 
+const postAuthor = async (authorData) => {
+    const db = getDb();
+    const collection = db.collection("authors");
+    const result = await collection.insertOne(authorData);
+    return result;
+};
+
 export { 
     getAllAuthors,
     getAuthorById,
-    getBooksFromAuthor
+    getBooksFromAuthor,
+    postAuthor
 };

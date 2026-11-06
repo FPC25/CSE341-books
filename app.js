@@ -14,4 +14,14 @@ app.get("/", (req, res) => {
     return res.status(200).json({ message: "Hello, World!" });
 });
 
+app.use((error, req, res, next) => {
+    if (error?.type === "entity.parse.failed") {
+        return res.status(400).json({
+            message: "Malformed JSON request body."
+        });
+    }
+
+    return next(error);
+});
+
 export default app;
