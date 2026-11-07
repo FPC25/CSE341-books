@@ -77,6 +77,50 @@ const bookPostValidationRules = [
         .bail(),
 ]
 
+const allowedPutBookFields = new Set(["authorId", "title", "publishedDate"]);
+
+const bookPutValidationRules = [
+    body().custom((value) => {
+        return (
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).every((key) => { return allowedPutBookFields.has(key); })
+        );
+    }),
+
+    body("authorId")
+        .optional()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2 })
+        .bail(),
+        
+    body("title")
+        .optional()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2, max: 100 })
+        .bail(),
+
+    body("publishedDate")
+        .optional()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isISO8601({ strict: true })
+        .bail(),
+]
+
 const postAllowedAuthorFields = new Set(["id", "name", "birthYear"]);
 
 const postAuthorValidationRules = [
