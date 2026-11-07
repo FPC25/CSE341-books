@@ -9,7 +9,8 @@ import {
     getAuthorByIdHandler,
     getBooksFromAuthorHandler,
     postAuthorHandler,
-    putAuthorHandler
+    putAuthorHandler,
+    deleteAuthorHandler
 } from "./controllers/authors.js";
 
 import { body } from "express-validator";
@@ -592,5 +593,62 @@ router.post("/authors", authorValidationRules, postAuthorHandler);
  *                   example: Internal Server Error
  */
 router.put("/authors/:id", authorUpdateValidationRules, putAuthorHandler);
+
+/**
+ * @swagger
+ * /authors/{id}:
+ *   delete:
+ *     summary: Delete an author
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Custom ID of the author to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Author deleted successfully
+ *         content:
+ *       404:
+ *         description: Author not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Author not found
+ *       409:
+ *         description: Conflict due to existing books associated with the author
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: The request conflicts with existing data.
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.delete("/authors/:id", deleteAuthorHandler);
 
 export default router;
