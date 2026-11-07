@@ -1,7 +1,8 @@
 import express from "express";
 import { 
     getBooksHandler,
-    getBookByIdHandler
+    getBookByIdHandler,
+    postBookHandler
 } from "./controllers/books.js";
 
 import {
@@ -17,15 +18,74 @@ import { body } from "express-validator";
 
 const router = express.Router();
 
-const allowedAuthorFields = new Set(["id", "name", "birthYear"]);
+const allowedPostBookFields = new Set(["id", "authorId", "title", "publishedDate"]);
 
-const authorValidationRules = [
+const bookPostValidationRules = [
     body().custom((value) => {
         return (
             value !== null &&
             typeof value === "object" &&
             !Array.isArray(value) &&
-            Object.keys(value).every((key) => { return allowedAuthorFields.has(key); })
+            Object.keys(value).every((key) => { return allowedPostBookFields.has(key); })
+        );
+    }),
+
+    body("id")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2 })
+        .bail(), 
+
+    body("authorId")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2 })
+        .bail(),
+        
+    body("title")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2, max: 100 })
+        .bail(),
+
+    body("publishedDate")
+        .exists()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isISO8601({ strict: true })
+        .bail(),
+]
+
+const postAllowedAuthorFields = new Set(["id", "name", "birthYear"]);
+
+const postAuthorValidationRules = [
+    body().custom((value) => {
+        return (
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).every((key) => { return postAllowedAuthorFields.has(key); })
         );
     }),
 
@@ -154,7 +214,6 @@ const authorUpdateValidationRules = [
  */
 router.get("/books", getBooksHandler);
 
-// Define route for a single book by ID
 /**
  * @swagger
  * /books/{id}:
@@ -224,6 +283,114 @@ router.get("/books", getBooksHandler);
  */
 router.get("/books/:id", getBookByIdHandler);
 
+/**
+ * @swagger
+ * /books:
+ *   post:
+ *     summary: Create a book
+ *     tags:
+ *       - Books
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - authorId
+ *               - title
+ *               - publishedDate
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 minLength: 2
+ *                 example: b4
+ *                 description: Custom book ID; trimmed and non-empty string;HTML characters are escaped before storage.
+ *               authorId:
+ *                 type: string
+ *                 minLength: 2
+ *                 example: a1
+ *                 description: Must match the custom ID of an existing author.
+ *               title:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *                 example: Example Book Title
+ *                 description: Trimmed, non-empty string; HTML characters are escaped before storage.
+ *               publishedDate:
+ *                 type: string
+ *                 format: ISO8601 date
+ *                 example: '2026-01-15'
+ *             additionalProperties: false
+ *     responses:
+ *       201:
+ *         description: Book inserted into MongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - acknowledged
+ *                 - insertedId
+ *               properties:
+ *                 acknowledged:
+ *                   type: boolean
+ *                   example: true
+ *                 insertedId:
+ *                   type: string
+ *                   description: MongoDB-generated document identifier
+ *                   example: 665f1a2b3c4d5e6f7a8b9c0d
+ *             example:
+ *               acknowledged: true
+ *               insertedId: 665f1a2b3c4d5e6f7a8b9c0d
+ *       400:
+ *         description: Invalid book data or malformed JSON
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               invalidBookData:
+ *                 summary: Missing or invalid fields, unknown fields, or nonexistent author ID
+ *                 value:
+ *                   message: Invalid book data.
+ *               malformedJson:
+ *                 summary: Malformed JSON request body
+ *                 value:
+ *                   message: Malformed JSON request body.
+ *       409:
+ *         description: A book with this ID already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: The request conflicts with existing data.
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.post("/books", bookPostValidationRules, postBookHandler);
+
 // Authors routes
 /**
  * @swagger
@@ -277,6 +444,7 @@ router.get("/books/:id", getBookByIdHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors", getAuthorsHandler);
+
 
 /**
  * @swagger
@@ -341,6 +509,7 @@ router.get("/authors", getAuthorsHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors/:id", getAuthorByIdHandler);
+
 
 /**
  * @swagger
@@ -418,6 +587,7 @@ router.get("/authors/:id", getAuthorByIdHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors/:id/books", getBooksFromAuthorHandler);
+
 
 /**
  * @swagger
@@ -518,7 +688,8 @@ router.get("/authors/:id/books", getBooksFromAuthorHandler);
  *                   type: string
  *                   example: Internal Server Error
  */
-router.post("/authors", authorValidationRules, postAuthorHandler);
+router.post("/authors", postAuthorValidationRules, postAuthorHandler);
+
 
 /**
  * @swagger
@@ -656,6 +827,7 @@ router.post("/authors", authorValidationRules, postAuthorHandler);
  *                   example: Internal Server Error
  */
 router.put("/authors/:id", authorUpdateValidationRules, putAuthorHandler);
+
 
 /**
  * @swagger
