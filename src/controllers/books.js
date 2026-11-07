@@ -1,7 +1,8 @@
 import { 
     getAllBooks,
     getBookById,
-    postBook
+    postBook,
+    putBook
 } from "../models/books.js";
 
 import { getAuthorById } from "../models/authors.js";
@@ -67,8 +68,58 @@ const postBookHandler = async (req, res) => {
     }
 };
 
+const putBookHandler = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ "message": "Invalid book data." });
+    }
+
+    const requestedId = req.params.id;
+
+    try {
+        const book = await getBookById(requestedId);
+        if (!book) {
+            return res.status(404).json({ "message": "Book not found" });
+        }
+
+        const updateData = {};
+        if (req.body.authorId !== undefined) {
+            const author = await getAuthorById(req.body.authorId);
+            if (!author) {
+                return res.status(400).json({ "message": "Invalid authorId. Author does not exist." });
+            }
+            updateData.authorId = req.body.authorId;
+        }
+        if (req.body.title !== undefined) {
+            updateData.title = req.body.title;
+        }
+        if (req.body.publishedDate !== undefined) {
+            updateData.publishedDate = req.body.publishedDate;
+        }
+
+        if (Object.keys(updateData).length === 0) {
+            return res.status(200).json({
+                "message": "No changes were made.",
+                book
+            })
+        };
+
+        const updatedBook = await putBook(requestedId, updateData);
+        if (!updatedBook) {
+            // if the book is deleted before the update and after the search, the updatedBook will be null, so we need to check for that
+            return res.status(404).json({ "message": "Book not found" });
+        }
+        return res.status(200).json({ "message": "Book updated successfully", "book": updatedBook });
+
+    } catch (error) {
+        console.error("PUT /books/:id failed:", error.message);
+        return res.status(500).json({ "message": "Internal Server Error" });
+    }
+};
+
 export { 
     getBooksHandler,
     getBookByIdHandler,
-    postBookHandler
+    postBookHandler,
+    putBookHandler
 };
