@@ -18,7 +18,7 @@ import { body } from "express-validator";
 
 const router = express.Router();
 
-const allowedPostBookFields = new Set(["id", "authorId", "title", "publicationDate"]);
+const allowedPostBookFields = new Set(["id", "authorId", "title", "publishedDate"]);
 
 const bookPostValidationRules = [
     body().custom((value) => {
