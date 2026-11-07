@@ -3,7 +3,8 @@ import {
     getBooksHandler,
     getBookByIdHandler,
     postBookHandler,
-    putBookHandler
+    putBookHandler,
+    deleteBookHandler
 } from "./controllers/books.js";
 
 import {
@@ -436,7 +437,6 @@ router.get("/books/:id", getBookByIdHandler);
  */
 router.post("/books", bookPostValidationRules, postBookHandler);
 
-
 /**
  * @swagger
  * /books/{id}:
@@ -554,6 +554,50 @@ router.post("/books", bookPostValidationRules, postBookHandler);
  */
 router.put("/books/:id", bookPutValidationRules, putBookHandler);
 
+/**
+ * @swagger
+ * /books/{id}:
+ *   delete:
+ *     summary: Delete a book
+ *     tags:
+ *       - Books
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Custom ID of the book to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Book deleted successfully
+ *       404:
+ *         description: Book not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Book not found
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.delete("/books/:id", deleteBookHandler);
+
 // Authors routes
 /**
  * @swagger
@@ -607,7 +651,6 @@ router.put("/books/:id", bookPutValidationRules, putBookHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors", getAuthorsHandler);
-
 
 /**
  * @swagger
@@ -672,7 +715,6 @@ router.get("/authors", getAuthorsHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors/:id", getAuthorByIdHandler);
-
 
 /**
  * @swagger
@@ -750,7 +792,6 @@ router.get("/authors/:id", getAuthorByIdHandler);
  *                   example: Internal Server Error
  */
 router.get("/authors/:id/books", getBooksFromAuthorHandler);
-
 
 /**
  * @swagger
@@ -852,7 +893,6 @@ router.get("/authors/:id/books", getBooksFromAuthorHandler);
  *                   example: Internal Server Error
  */
 router.post("/authors", postAuthorValidationRules, postAuthorHandler);
-
 
 /**
  * @swagger
@@ -990,7 +1030,6 @@ router.post("/authors", postAuthorValidationRules, postAuthorHandler);
  *                   example: Internal Server Error
  */
 router.put("/authors/:id", authorUpdateValidationRules, putAuthorHandler);
-
 
 /**
  * @swagger
