@@ -3,7 +3,8 @@ import {
     getAuthorById,
     getBooksFromAuthor,
     postAuthor,
-    putAuthor
+    putAuthor,
+    deleteAuthor
 } from "../models/authors.js";
 
 import {
@@ -118,10 +119,36 @@ const putAuthorHandler = async (req, res) => {
     }
 };
 
+const deleteAuthorHandler = async (req, res) => {
+    const requestedId = req.params.id;
+    try {
+        const author = await getAuthorById(requestedId);
+        if (!author) {
+            return res.status(404).json({ "message": "Author not found" });
+        }
+
+        const books = await getBooksFromAuthor(requestedId);
+        if (books.length > 0) {
+            return res.status(409).json({ "message": "The request conflicts with existing data." });
+        }
+
+        const result = await deleteAuthor(requestedId);
+        if (result.deletedCount === 0) { // This means the author was not found or already deleted before the delete operation and after the check for existence, so we return a 404.
+            return res.status(404).json({ "message": "Author not found" });
+        }
+        return res.status(204).send();
+
+    } catch (error) {
+        console.error("DELETE /authors/:id failed:", error.message);
+        return res.status(500).json({ "message": "Internal Server Error" });
+    }
+};
+
 export { 
     getAuthorsHandler,
     getAuthorByIdHandler,
     getBooksFromAuthorHandler,
     postAuthorHandler,
-    putAuthorHandler
+    putAuthorHandler,
+    deleteAuthorHandler
 }
