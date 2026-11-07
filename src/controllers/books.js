@@ -47,7 +47,7 @@ const postBookHandler = async (req, res) => {
             id: req.body.id,
             authorId: req.body.authorId,
             title: req.body.title,
-            publicationDate: req.body.publicationDate
+            publishedDate: req.body.publishedDate
         }
 
         const author = await getAuthorById(bookData.authorId);
