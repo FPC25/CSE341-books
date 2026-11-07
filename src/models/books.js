@@ -14,7 +14,15 @@ const getBookById = async (bookId) => {
     return book;
 }
 
+const postBook = async (bookData) => {
+    const db = getDb();
+    const collection = db.collection("books");
+    const result = await collection.insertOne(bookData);
+    return result;
+}
+
 export { 
     getAllBooks,
-    getBookById
+    getBookById,
+    postBook
 };
