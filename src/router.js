@@ -17,15 +17,74 @@ import { body } from "express-validator";
 
 const router = express.Router();
 
-const allowedAuthorFields = new Set(["id", "name", "birthYear"]);
+const allowedPostBookFields = new Set(["id", "authorId", "title", "publicationDate"]);
 
-const authorValidationRules = [
+const bookValidationRules = [
     body().custom((value) => {
         return (
             value !== null &&
             typeof value === "object" &&
             !Array.isArray(value) &&
-            Object.keys(value).every((key) => { return allowedAuthorFields.has(key); })
+            Object.keys(value).every((key) => { return allowedPostBookFields.has(key); })
+        );
+    }),
+
+    body("id")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2 })
+        .bail(), 
+
+    body("authorId")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2 })
+        .bail(),
+        
+    body("title")
+        .exists()
+        .bail()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2, max: 100 })
+        .bail(),
+
+    body("publishedDate")
+        .exists()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isISO8601({ strict: true })
+        .bail(),
+]
+
+const postAllowedAuthorFields = new Set(["id", "name", "birthYear"]);
+
+const postAuthorValidationRules = [
+    body().custom((value) => {
+        return (
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).every((key) => { return postAllowedAuthorFields.has(key); })
         );
     }),
 
@@ -518,7 +577,7 @@ router.get("/authors/:id/books", getBooksFromAuthorHandler);
  *                   type: string
  *                   example: Internal Server Error
  */
-router.post("/authors", authorValidationRules, postAuthorHandler);
+router.post("/authors", postAuthorValidationRules, postAuthorHandler);
 
 /**
  * @swagger
