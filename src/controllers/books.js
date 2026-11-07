@@ -2,7 +2,8 @@ import {
     getAllBooks,
     getBookById,
     postBook,
-    putBook
+    putBook,
+    deleteBook
 } from "../models/books.js";
 
 import { getAuthorById } from "../models/authors.js";
@@ -117,9 +118,31 @@ const putBookHandler = async (req, res) => {
     }
 };
 
+const deleteBookHandler = async (req, res) => {
+    const requestedId = req.params.id;
+
+    try {
+        const book = await getBookById(requestedId);
+        if (!book) {
+            return res.status(404).json({ "message": "Book not found" });
+        }
+
+        const result = await deleteBook(requestedId);
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ "message": "Book not found" });
+        }
+
+        return res.status(204).json({ "message": "Book deleted successfully" });
+    } catch (error) {
+        console.error("DELETE /books/:id failed:", error.message);
+        return res.status(500).json({ "message": "Internal Server Error" });
+    }
+};
+
 export { 
     getBooksHandler,
     getBookByIdHandler,
     postBookHandler,
-    putBookHandler
+    putBookHandler,
+    deleteBookHandler
 };
