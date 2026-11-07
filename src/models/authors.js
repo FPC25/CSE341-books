@@ -43,10 +43,18 @@ const putAuthor = async (authorId, updateData) => {
     );
 };
 
+const deleteAuthor = async (authorId) => {
+    const db = getDb();
+    const collection = db.collection("authors");
+    const result = await collection.deleteOne({ id: authorId });
+    return result;
+};
+
 export { 
     getAllAuthors,
     getAuthorById,
     getBooksFromAuthor,
     postAuthor,
-    putAuthor
+    putAuthor,
+    deleteAuthor
 };
