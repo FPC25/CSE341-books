@@ -2,7 +2,8 @@ import express from "express";
 import { 
     getBooksHandler,
     getBookByIdHandler,
-    postBookHandler
+    postBookHandler,
+    putBookHandler
 } from "./controllers/books.js";
 
 import {
@@ -69,6 +70,50 @@ const bookPostValidationRules = [
     body("publishedDate")
         .exists()
         .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isISO8601({ strict: true })
+        .bail(),
+]
+
+const allowedPutBookFields = new Set(["authorId", "title", "publishedDate"]);
+
+const bookPutValidationRules = [
+    body().custom((value) => {
+        return (
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.keys(value).every((key) => { return allowedPutBookFields.has(key); })
+        );
+    }),
+
+    body("authorId")
+        .optional()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2 })
+        .bail(),
+        
+    body("title")
+        .optional()
+        .isString()
+        .bail()
+        .trim()
+        .notEmpty()
+        .bail()
+        .escape()
+        .isLength({ min: 2, max: 100 })
+        .bail(),
+
+    body("publishedDate")
+        .optional()
         .trim()
         .notEmpty()
         .bail()
@@ -390,6 +435,124 @@ router.get("/books/:id", getBookByIdHandler);
  *                   example: Internal Server Error
  */
 router.post("/books", bookPostValidationRules, postBookHandler);
+
+
+/**
+ * @swagger
+ * /books/{id}:
+ *   put:
+ *     summary: Partially update a book
+ *     tags:
+ *       - Books
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Custom ID of the book to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               authorId:
+ *                 type: string
+ *                 minLength: 2
+ *                 example: a1
+ *                 description: Optional; must match the custom ID of an existing author.
+ *               title:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *                 example: Updated Book Title
+ *                 description: Optional; trimmed, non-empty string; HTML characters are escaped before storage.
+ *               publishedDate:
+ *                 type: string
+ *                 format: ISO8601 date
+ *                 example: '2022-09-02'
+ *                 description: Optional; ISO 8601 date.
+ *             additionalProperties: false
+ *     responses:
+ *       200:
+ *         description: Book updated successfully, or no changes were needed; returns the current book in either case
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - _id
+ *                 - id
+ *                 - authorId
+ *                 - title
+ *                 - publishedDate
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: MongoDB document identifier
+ *                 id:
+ *                   type: string
+ *                 authorId:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 publishedDate:
+ *                   type: string
+ *                   format: date
+ *             example:
+ *               _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *               id: b1
+ *               authorId: a1
+ *               title: Updated Book Title
+ *               publishedDate: '2022-09-02'
+ *       400:
+ *         description: Invalid book data or malformed JSON
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               invalidBookData:
+ *                 summary: Invalid fields, additional fields, or nonexistent author ID
+ *                 value:
+ *                   message: Invalid book data.
+ *               malformedJson:
+ *                 summary: Malformed JSON request body
+ *                 value:
+ *                   message: Malformed JSON request body.
+ *       404:
+ *         description: Book not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Book not found
+ *       500:
+ *         description: Unexpected server or database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - message
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.put("/books/:id", bookPutValidationRules, putBookHandler);
 
 // Authors routes
 /**

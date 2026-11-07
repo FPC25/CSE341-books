@@ -21,8 +21,25 @@ const postBook = async (bookData) => {
     return result;
 }
 
+const putBook = async (bookId, updateData) => {
+    const db = getDb()
+    const collection = db.collection("books");
+
+    if (Object.keys(updateData).length === 0) {
+        return collection.findOne({ id: bookId });
+    }
+
+    return collection.findOneAndUpdate(
+        { id: bookId },
+        { $set: updateData },
+        { returnDocument: "after" }
+    );
+};
+
+
 export { 
     getAllBooks,
     getBookById,
-    postBook
+    postBook,
+    putBook
 };
