@@ -36,10 +36,17 @@ const putBook = async (bookId, updateData) => {
     );
 };
 
+const deleteBook = async (bookId) => {
+    const db = getDb();
+    const collection = db.collection("books");
+    const result = await collection.deleteOne({ id: bookId });
+    return result;
+};
 
 export { 
     getAllBooks,
     getBookById,
     postBook,
-    putBook
+    putBook,
+    deleteBook
 };
