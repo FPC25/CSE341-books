@@ -130,6 +130,17 @@ const authorUpdateValidationRules = [
  *                   - title
  *                   - publicationDate
  *                   - _id
+ *             example:
+ *               - _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *                 id: b1
+ *                 authorId: a1
+ *                 title: A book title
+ *                 publicationDate: '2022-09-02'
+ *               - _id: 665f1a2b3c4d5e6f7a8b9c0e
+ *                 id: b2
+ *                 authorId: a1
+ *                 title: Another book title
+ *                 publicationDate: '2002-12-27'
  *       500:
  *         description: Internal server error
  *         content:
@@ -184,6 +195,12 @@ router.get("/books", getBooksHandler);
  *                 - title
  *                 - publicationDate
  *                 - _id
+ *             example:
+ *               _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *               id: b1
+ *               authorId: a1
+ *               title: A book title
+ *               publicationDate: '2022-09-02'
  *       404:
  *         description: Book not found
  *         content:
@@ -239,6 +256,15 @@ router.get("/books/:id", getBookByIdHandler);
  *                   - id
  *                   - name
  *                   - birthYear
+ *             example:
+ *               - _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *                 id: a1
+ *                 name: Jane Austen
+ *                 birthYear: 1775
+ *               - _id: 665f1a2b3c4d5e6f7a8b9c0e
+ *                 id: a2
+ *                 name: Mary Shelley
+ *                 birthYear: 1797
  *       500:
  *         description: Internal server error
  *         content:
@@ -288,6 +314,11 @@ router.get("/authors", getAuthorsHandler);
  *                 - id
  *                 - name
  *                 - birthYear
+ *             example:
+ *               _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *               id: a1
+ *               name: Jane Austen
+ *               birthYear: 1775
  *       404:
  *         description: Author not found
  *         content:
@@ -353,6 +384,18 @@ router.get("/authors/:id", getAuthorByIdHandler);
  *                   - authorId
  *                   - title
  *                   - publicationDate
+ *             examples:
+ *               withBooks:
+ *                 summary: Author has related books
+ *                 value:
+ *                   - _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *                     id: b1
+ *                     authorId: a1
+ *                     title: A book title
+ *                     publicationDate: '2022-09-02'
+ *               noBooks:
+ *                 summary: Author exists but has no books
+ *                 value: []
  *       404:
  *         description: Author not found
  *         content:
@@ -427,6 +470,9 @@ router.get("/authors/:id/books", getBooksFromAuthorHandler);
  *                   type: string
  *                   description: MongoDB-generated document identifier
  *                   example: 665f1a2b3c4d5e6f7a8b9c0d
+ *             example:
+ *               acknowledged: true
+ *               insertedId: 665f1a2b3c4d5e6f7a8b9c0d
  *       400:
  *         description: Invalid author data or malformed JSON
  *         content:
@@ -547,6 +593,23 @@ router.post("/authors", authorValidationRules, postAuthorHandler);
  *                           type: string
  *                         birthYear:
  *                           type: integer
+ *             examples:
+ *               updated:
+ *                 summary: Author updated
+ *                 value:
+ *                   _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *                   id: a1
+ *                   name: Jane Austen
+ *                   birthYear: 1775
+ *               unchanged:
+ *                 summary: Empty request body; no changes made
+ *                 value:
+ *                   message: No changes were made.
+ *                   author:
+ *                     _id: 665f1a2b3c4d5e6f7a8b9c0d
+ *                     id: a1
+ *                     name: Jane Austen
+ *                     birthYear: 1775
  *       400:
  *         description: Invalid author data or malformed JSON
  *         content:
@@ -611,7 +674,6 @@ router.put("/authors/:id", authorUpdateValidationRules, putAuthorHandler);
  *     responses:
  *       204:
  *         description: Author deleted successfully
- *         content:
  *       404:
  *         description: Author not found
  *         content:

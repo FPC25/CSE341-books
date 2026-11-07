@@ -54,7 +54,23 @@
                       "_id"
                     ]
                   }
-                }
+                },
+                "example": [
+                  {
+                    "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                    "id": "b1",
+                    "authorId": "a1",
+                    "title": "A book title",
+                    "publicationDate": "2022-09-02"
+                  },
+                  {
+                    "_id": "665f1a2b3c4d5e6f7a8b9c0e",
+                    "id": "b2",
+                    "authorId": "a1",
+                    "title": "Another book title",
+                    "publicationDate": "2002-12-27"
+                  }
+                ]
               }
             }
           },
@@ -127,6 +143,13 @@
                     "publicationDate",
                     "_id"
                   ]
+                },
+                "example": {
+                  "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                  "id": "b1",
+                  "authorId": "a1",
+                  "title": "A book title",
+                  "publicationDate": "2022-09-02"
                 }
               }
             }
@@ -203,7 +226,21 @@
                       "birthYear"
                     ]
                   }
-                }
+                },
+                "example": [
+                  {
+                    "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                    "id": "a1",
+                    "name": "Jane Austen",
+                    "birthYear": 1775
+                  },
+                  {
+                    "_id": "665f1a2b3c4d5e6f7a8b9c0e",
+                    "id": "a2",
+                    "name": "Mary Shelley",
+                    "birthYear": 1797
+                  }
+                ]
               }
             }
           },
@@ -287,6 +324,10 @@
                       "example": "665f1a2b3c4d5e6f7a8b9c0d"
                     }
                   }
+                },
+                "example": {
+                  "acknowledged": true,
+                  "insertedId": "665f1a2b3c4d5e6f7a8b9c0d"
                 }
               }
             }
@@ -409,6 +450,12 @@
                     "name",
                     "birthYear"
                   ]
+                },
+                "example": {
+                  "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                  "id": "a1",
+                  "name": "Jane Austen",
+                  "birthYear": 1775
                 }
               }
             }
@@ -549,6 +596,29 @@
                       }
                     }
                   ]
+                },
+                "examples": {
+                  "updated": {
+                    "summary": "Author updated",
+                    "value": {
+                      "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                      "id": "a1",
+                      "name": "Jane Austen",
+                      "birthYear": 1775
+                    }
+                  },
+                  "unchanged": {
+                    "summary": "Empty request body; no changes made",
+                    "value": {
+                      "message": "No changes were made.",
+                      "author": {
+                        "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                        "id": "a1",
+                        "name": "Jane Austen",
+                        "birthYear": 1775
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -643,8 +713,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Author deleted successfully",
-            "content": null
+            "description": "Author deleted successfully"
           },
           "404": {
             "description": "Author not found",
@@ -758,6 +827,24 @@
                       "title",
                       "publicationDate"
                     ]
+                  }
+                },
+                "examples": {
+                  "withBooks": {
+                    "summary": "Author has related books",
+                    "value": [
+                      {
+                        "_id": "665f1a2b3c4d5e6f7a8b9c0d",
+                        "id": "b1",
+                        "authorId": "a1",
+                        "title": "A book title",
+                        "publicationDate": "2022-09-02"
+                      }
+                    ]
+                  },
+                  "noBooks": {
+                    "summary": "Author exists but has no books",
+                    "value": []
                   }
                 }
               }
